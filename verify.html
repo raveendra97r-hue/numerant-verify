@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Numerant — Email Verification</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background-color: #0a0a0b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .card { background: #111116; border: 1px solid rgba(255,255,255,0.07); border-radius: 24px; padding: 48px 40px; max-width: 480px; width: 100%; text-align: center; }
+    .logo-text { font-size: 26px; font-weight: 700; letter-spacing: 6px; color: #C9A84C; }
+    .logo-tag { font-size: 10px; font-weight: 500; letter-spacing: 3px; color: #1bd98a; margin-top: 6px; }
+    .divider { width: 40px; height: 2px; bacround: rgba(255,255,255,0.08); margin: 32px auto; border-radius: 2px; }
+    .icon { font-size: 52px; margin-bottom: 20px; }
+    .title { font-size: 22px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px; margin-bottom: 12px; }
+    .subtitle { font-size: 15px; color: #888; line-height: 1.7; margin-bottom: 36px; }
+    .btn { display: inline-block; background: #C9A84C; color: #000; font-size: 15px; font-weight: 700; text-decoration: none; padding: 14px 36px; border-radius: 14px; cursor: pointer; border: none; }
+    .footer { margin-top: 40px; font-size: 12px; color: #2a2a2a; }
+    #state-loading, #state-success, #state-error, #state-expired { display: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo-text">NUMERANT</div>
+    <div class="logo-tag">TRACK IT. OWN IT. GROW IT.</div>
+    <div class="divider"></div>
+
+    <div id="state-loading">
+      <div class="icon">⏳</div>
+      <div class="title">Verifying your email…</div>
+      <div class="subtitle">Just a moment while wefirm your address.</div>
+    </div>
+
+    <div id="state-success">
+      <div class="icon">✅</div>
+      <div class="title">You're verified!</div>
+      <div class="subtitle">Welcome to Numerant. Your email has been confirmed and your account is ready to go.<br><br>Open the app and sign in to start tracking your finances.</div>
+      <a class="btn" href="#" onclick="window.close();return false;">Open Numerant</a>
+    </div>
+
+    <div id="state-expired">
+      <div class="icon">⏰</div>
+      <div class="title">Link expired</div>
+      <div class="subtitle">This verification link has expired or already been used. Sign in to the app and request a new verification email.</div>
+    </div>
+
+    <div id="state-error">
+      <div class="icon">❌</div>
+      <div class="title">Something went wrong</div>
+      <div class="subtitle">We couldn't verify your email. Please try again or contact support.</div>
+    </div>
+
+    <div class="footer">Numerant · Built with care for your financial future</div>
+  </div>
+
+  <sype="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+    import { getAuth, applyActionCode } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
+    const app = initializeApp({
+      apiKey: "AIzaSyCGFvnHRDm441avQl2YO7OgOZ6wLdI5upM",
+      authDomain: "money-and-beyond.firebaseapp.com",
+      projectId: "money-and-beyond",
+      storageBucket: "money-and-beyond.firebasestorage.app",
+      messagingSenderId: "804170502494",
+      appId: "1:804170502494:web:placeholder"
+    });
+
+    const auth = getAuth(app);
+
+    function show(id) {
+      ["state-loading","state-success","state-error","state-expired"].forEach(s => {
+        document.getElementById(s).style.display = s === id ? "block" : "none";
+      });
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get("mode");
+    const oobCode = params.get("oobCode");
+
+    if (mode === "verifyEmail" && oobCode) {
+      show("state-loading");
+      applyActionCode(auth, oobCode)
+        .then(() => show("state-success"))
+        .catch(err => {
+          if (err.code === "auth/expired-action-code" || err.code === "auth/invalid-action-code") {
+            show("state-expired");
+          } else {
+            show("state-error");
+          }
+        });
+    } else {
+      show("state-error");
+    }
+  </script>
+</body>
+</html>
