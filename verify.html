@@ -10,7 +10,7 @@
     .card { background: #111116; border: 1px solid rgba(255,255,255,0.07); border-radius: 24px; padding: 48px 40px; max-width: 480px; width: 100%; text-align: center; }
     .logo-text { font-size: 26px; font-weight: 700; letter-spacing: 6px; color: #C9A84C; }
     .logo-tag { font-size: 10px; font-weight: 500; letter-spacing: 3px; color: #1bd98a; margin-top: 6px; }
-    .divider { width: 40px; height: 2px; bacround: rgba(255,255,255,0.08); margin: 32px auto; border-radius: 2px; }
+    .divider { width: 40px; height: 2px; background: rgba(255,255,255,0.08); margin: 32px auto; border-dius: 2px; }
     .icon { font-size: 52px; margin-bottom: 20px; }
     .title { font-size: 22px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px; margin-bottom: 12px; }
     .subtitle { font-size: 15px; color: #888; line-height: 1.7; margin-bottom: 36px; }
@@ -28,10 +28,10 @@
     <div id="state-loading">
       <div class="icon">⏳</div>
       <div class="title">Verifying your email…</div>
-      <div class="subtitle">Just a moment while wefirm your address.</div>
+      <div class="subtitle">Just a moment while we confirm your address.</div>
     </div>
 
-    <div id="state-success">
+    <div id="statecess">
       <div class="icon">✅</div>
       <div class="title">You're verified!</div>
       <div class="subtitle">Welcome to Numerant. Your email has been confirmed and your account is ready to go.<br><br>Open the app and sign in to start tracking your finances.</div>
@@ -53,36 +53,33 @@
     <div class="footer">Numerant · Built with care for your financial future</div>
   </div>
 
-  <sype="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-    import { getAuth, applyActionCode } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
-
-    const app = initializeApp({
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebacompat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script>
+    firebase.initializeApp({
       apiKey: "AIzaSyCGFvnHRDm441avQl2YO7OgOZ6wLdI5upM",
       authDomain: "money-and-beyond.firebaseapp.com",
       projectId: "money-and-beyond",
       storageBucket: "money-and-beyond.firebasestorage.app",
       messagingSenderId: "804170502494",
-      appId: "1:804170502494:web:placeholder"
+      appId: "1:804170502494:web:8a1b2c3d4e5f6789"
     });
 
-    const auth = getAuth(app);
-
     function show(id) {
-      ["state-loading","state-success","state-error","state-expired"].forEach(s => {
+      ["state-loading","state-success","state-error","state-expired"].forEach(function(s) {
         document.getElementById(s).style.display = s === id ? "block" : "none";
       });
     }
 
-    const params = new URLSearchParams(window.location.search);
-    const mode = params.get("mode");
-    const oobCode = params.get("oobCode");
+    var params = new URLSearchParams(window.location.search);
+    var mode = params.get("mode");
+    var oobCode = params.get("oobCode");
 
     if (mode === "verifyEmail" && oobCode) {
       show("state-loading");
-      applyActionCode(auth, oobCode)
-        .then(() => show("state-success"))
-        .catch(err => {
+      firebase.auth().applyActionCode(oobCode)
+        .then(function() { show("state-success"); })
+        .catch(function(err) {
           if (err.code === "auth/expired-action-code" || err.code === "auth/invalid-action-code") {
             show("state-expired");
           } else {
