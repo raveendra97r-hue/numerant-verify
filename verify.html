@@ -31,7 +31,7 @@
       <div class="subtitle">Just a moment while we confirm your address.</div>
     </div>
 
-    <div id="statecess">
+    <div id="state-success">
       <div class="icon">✅</div>
       <div class="title">You're verified!</div>
       <div class="subtitle">Welcome to Numerant. Your email has been confirmed and your account is ready to go.<br><br>Open the app and sign in to start tracking your finances.</div>
@@ -87,7 +87,9 @@
           }
         });
     } else {
-      show("state-error");
+      // Landed here via continueUrl after Firebase's own verification page already
+      // confirmed the email — no oobCode to process, just show success.
+      show("state-success");
     }
   </script>
 </body>
