@@ -1,1 +1,384 @@
-<meta http-equiv="refresh" content="0; url=/verify.html">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Numerant — Track It. Own It. Grow It.</title>
+  <meta name="description" content="Numerant is a personal finance app for iOS and Android that tracks your spending automatically — AI-powered bank statement import, Gmail auto-sync, budgets, investments, net worth, and an AI advisor, in 49 currencies.">
+  <style>
+    :root {
+      --bg: #0a0a0b;
+      --card: #111116;
+      --card-hover: #16161c;
+      --border: rgba(255,255,255,0.07);
+      --border-hover: rgba(201,168,76,0.4);
+      --gold: #C9A84C;
+      --gold-soft: rgba(201,168,76,0.12);
+      --green: #1bd98a;
+      --green-soft: rgba(27,217,138,0.12);
+      --blue: #4d9eff;
+      --blue-soft: rgba(77,158,255,0.12);
+      --text: #ffffff;
+      --text-muted: #97979f;
+      --text-faint: #4a4a52;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      position: relative;
+    }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+    /* animated background blobs */
+    .bg-blobs { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+    .blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.22; will-change: transform; }
+    .blob-gold { width: 420px; height: 420px; background: var(--gold); top: -120px; left: -100px; animation: driftA 22s ease-in-out infinite alternate; }
+    .blob-green { width: 380px; height: 380px; background: var(--green); top: 30%; right: -140px; opacity: 0.16; animation: driftB 26s ease-in-out infinite alternate; }
+    .blob-blue { width: 340px; height: 340px; background: var(--blue); bottom: -100px; left: 10%; opacity: 0.14; animation: driftC 30s ease-in-out infinite alternate; }
+    @keyframes driftA { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(60px,80px) scale(1.15); } }
+    @keyframes driftB { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(-70px,60px) scale(1.1); } }
+    @keyframes driftC { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(50px,-50px) scale(1.2); } }
+
+    /* nav */
+    nav { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; backdrop-filter: blur(14px); background: rgba(10,10,11,0.55); border-bottom: 1px solid transparent; transition: border-color 0.3s; max-width: 760px; margin: 0 auto; }
+    nav.scrolled { border-bottom-color: var(--border); }
+    .nav-brand { font-size: 13px; font-weight: 800; letter-spacing: 3px; color: var(--gold); }
+    .nav-links { display: flex; gap: 22px; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 13px; font-weight: 600; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+
+    header.hero-header { padding: 56px 0 36px; text-align: center; }
+    .logo-text { font-size: 30px; font-weight: 700; letter-spacing: 7px; color: var(--gold); }
+    .logo-tag { font-size: 11px; font-weight: 500; letter-spacing: 3px; color: var(--green); margin-top: 8px; }
+
+    .status-pill { display: inline-flex; align-items: center; gap: 7px; background: var(--card); border: 1px solid var(--border); border-radius: 999px; padding: 7px 16px; font-size: 12px; color: var(--text-muted); margin: 28px 0 22px; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 0 rgba(27,217,138,0.6); animation: pulseDot 2s infinite; }
+    @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(27,217,138,0.55); } 70% { box-shadow: 0 0 0 8px rgba(27,217,138,0); } 100% { box-shadow: 0 0 0 0 rgba(27,217,138,0); } }
+
+    .hero { text-align: center; padding-bottom: 8px; }
+    .hero h1 { font-size: 38px; font-weight: 700; letter-spacing: -0.6px; line-height: 1.25; margin-bottom: 18px; }
+    .hero h1 .grad {
+      background: linear-gradient(90deg, var(--gold), var(--green), var(--gold));
+      background-size: 200% auto;
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      animation: shimmer 6s linear infinite;
+    }
+    @keyframes shimmer { to { background-position: 200% center; } }
+    .hero p { font-size: 16px; color: var(--text-muted); line-height: 1.7; max-width: 500px; margin: 0 auto; }
+
+    /* platform badges */
+    .platforms { display: flex; justify-content: center; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
+    .platform-pill { display: flex; align-items: center; gap: 9px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px 20px; }
+    .platform-pill svg { width: 20px; height: 20px; flex-shrink: 0; }
+    .platform-pill .p-label { text-align: left; }
+    .platform-pill .p-title { font-size: 13px; font-weight: 700; color: var(--text); display: block; }
+    .platform-pill .p-sub { font-size: 10px; color: var(--text-muted); letter-spacing: 0.3px; }
+
+    /* marquee */
+    .marquee-wrap { margin-top: 48px; overflow: hidden; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 16px 0; }
+    .marquee { display: flex; width: max-content; gap: 40px; animation: scrollMarquee 26s linear infinite; }
+    .marquee span { font-size: 12px; font-weight: 700; letter-spacing: 1.2px; color: var(--text-faint); text-transform: uppercase; white-space: nowrap; }
+    .marquee span.accent { color: var(--gold); }
+    @keyframes scrollMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* section headings */
+    .section-head { text-align: center; padding: 72px 0 12px; }
+    .section-head .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--green); text-transform: uppercase; }
+    .section-head h2 { font-size: 26px; font-weight: 700; margin-top: 10px; letter-spacing: -0.4px; }
+    .section-head p { color: var(--text-muted); font-size: 14px; margin-top: 10px; max-width: 460px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+
+    /* reveal animation */
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      padding: 32px 0 8px;
+    }
+    .feature {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px 20px;
+      transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+    }
+    .feature:hover { transform: translateY(-4px); border-color: var(--border-hover); background: var(--card-hover); }
+    .feature .icon { font-size: 24px; margin-bottom: 12px; display: inline-block; }
+    .feature h3 { font-size: 14px; font-weight: 700; margin-bottom: 7px; }
+    .feature p { font-size: 12.5px; color: var(--text-muted); line-height: 1.55; }
+
+    /* why / security trio */
+    .trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding: 32px 0 8px; }
+    .trio-card { text-align: center; padding: 26px 16px; }
+    .trio-card .icon-wrap { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 20px; }
+    .trio-card:nth-child(1) .icon-wrap { background: var(--gold-soft); }
+    .trio-card:nth-child(2) .icon-wrap { background: var(--green-soft); }
+    .trio-card:nth-child(3) .icon-wrap { background: var(--blue-soft); }
+    .trio-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+    .trio-card p { font-size: 12.5px; color: var(--text-muted); line-height: 1.6; }
+
+    .cta {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px 40px;
+      text-align: center;
+      margin: 64px 0 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta::before {
+      content: ''; position: absolute; inset: -2px; border-radius: 24px; padding: 1px;
+      background: linear-gradient(120deg, var(--gold), transparent 30%, transparent 70%, var(--green));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      opacity: 0.5; pointer-events: none;
+    }
+    .cta h2 { font-size: 20px; font-weight: 700; margin-bottom: 12px; }
+    .cta p { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+    .cta .badge {
+      display: inline-block;
+      background: var(--gold);
+      color: #000;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 13px 32px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+    }
+    .cta .platforms-inline { display: flex; justify-content: center; gap: 18px; font-size: 12px; color: var(--text-muted); }
+    .cta .platforms-inline span { display: flex; align-items: center; gap: 6px; }
+    .cta .platforms-inline svg { width: 14px; height: 14px; }
+
+    footer {
+      padding: 32px 0 60px;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+    footer .links { margin-bottom: 16px; }
+    footer .links a { color: var(--text-muted); text-decoration: none; font-size: 13px; margin: 0 14px; transition: color 0.2s; }
+    footer .links a:hover { color: var(--gold); }
+    footer .copy { font-size: 12px; color: var(--text-faint); }
+
+    @media (max-width: 480px) {
+      .features { grid-template-columns: 1fr; }
+      .trio { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      header.hero-header { padding: 40px 0 28px; }
+      .hero h1 { font-size: 29px; }
+      .platforms { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-blobs">
+    <div class="blob blob-gold"></div>
+    <div class="blob blob-green"></div>
+    <div class="blob blob-blue"></div>
+  </div>
+
+  <nav id="nav">
+    <div class="nav-brand">NUMERANT</div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#security">Security</a>
+      <a href="#get-it">Get it</a>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <header class="hero-header">
+      <div class="logo-text">NUMERANT</div>
+      <div class="logo-tag">TRACK IT. OWN IT. GROW IT.</div>
+    </header>
+
+    <section class="hero">
+      <div style="text-align:center;">
+        <span class="status-pill"><span class="status-dot"></span> Early access — testing ahead of launch</span>
+      </div>
+      <h1>Your money, <span class="grad">finally organized.</span></h1>
+      <p>Numerant tracks your spending automatically — from manual entries, AI-read bank statements, or straight from your inbox — so your finances stay current without the busywork.</p>
+
+      <div class="platforms">
+        <div class="platform-pill">
+          <svg viewBox="0 0 384 512" fill="#ffffff"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141 8 184.8 8 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 37.6 59 129.3 107.2 127.8 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-84.1 102.6-121.8-65.2-30.7-65.7-90-65.7-91.8v-.2zM254.3 82.1c26.9-32 24.5-61.2 23.7-71.7-23.8 1.4-51.4 16.4-67.1 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69-35.1z"/></svg>
+          <div class="p-label"><span class="p-title">Coming soon</span><span class="p-sub">on iOS</span></div>
+        </div>
+        <div class="platform-pill">
+          <svg viewBox="0 0 576 512" fill="#ffffff"><path d="M420.55,301.93a24,24,0,1,1,24-24,24,24,0,0,1-24,24m-265.1,0a24,24,0,1,1,24-24,24,24,0,0,1-24,24m273.7-144.48,47.94-83a10,10,0,1,0-17.27-10h0l-48.54,84.07a301.25,301.25,0,0,0-246.56,0L116.18,64.45a10,10,0,1,0-17.27,10h0l47.94,83C64.53,202.22,8.24,285.55,0,384H576c-8.24-98.45-64.54-181.78-146.85-226.55"/></svg>
+          <div class="p-label"><span class="p-title">Coming soon</span><span class="p-sub">on Android</span></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="marquee-wrap reveal">
+      <div class="marquee">
+        <span class="accent">49 CURRENCIES</span><span>·</span>
+        <span>AI BANK STATEMENT IMPORT</span><span>·</span>
+        <span class="accent">GMAIL AUTO-SYNC</span><span>·</span>
+        <span>BUDGETS &amp; ALERTS</span><span>·</span>
+        <span class="accent">INVESTMENT TRACKING</span><span>·</span>
+        <span>AI ADVISOR</span><span>·</span>
+        <span class="accent">MULTI-BUSINESS</span><span>·</span>
+        <span>PIN + FACE ID LOCK</span><span>·</span>
+        <span class="accent">49 CURRENCIES</span><span>·</span>
+        <span>AI BANK STATEMENT IMPORT</span><span>·</span>
+        <span class="accent">GMAIL AUTO-SYNC</span><span>·</span>
+        <span>BUDGETS &amp; ALERTS</span><span>·</span>
+        <span class="accent">INVESTMENT TRACKING</span><span>·</span>
+        <span>AI ADVISOR</span><span>·</span>
+        <span class="accent">MULTI-BUSINESS</span><span>·</span>
+        <span>PIN + FACE ID LOCK</span><span>·</span>
+      </div>
+    </div>
+
+    <section id="features">
+      <div class="section-head reveal">
+        <div class="eyebrow">Everything in one place</div>
+        <h2>Built for how money actually moves</h2>
+        <p>From a single manual entry to a whole business ledger — Numerant meets you wherever your transactions come from.</p>
+      </div>
+
+      <div class="features">
+        <div class="feature reveal">
+          <div class="icon">📝</div>
+          <h3>Effortless tracking</h3>
+          <p>Log income and expenses in seconds, organized by category and currency.</p>
+        </div>
+        <div class="feature reveal">
+          <div class="icon">📂</div>
+          <h3>AI statement import</h3>
+          <p>Upload a bank PDF or CSV and AI extracts every transaction — HDFC, ICICI, SBI, Axis, Kotak, Barclays, HSBC &amp; more.</p>
+        </div>
+        <div class="feature reveal">
+          <div class="icon">📧</div>
+          <h3>Gmail auto-sync</h3>
+          <p>Connect Gmail and transactions from bank emails appear automatically, with the sending bank auto-detected.</p>
+        </div>
+        <div class="feature reveal">
+          <div class="icon">💰</div>
+          <h3>Budgets &amp; alerts</h3>
+          <p>Set a monthly spending limit per category and get warned before you go over it.</p>
+        </div>
+        <div class="feature reveal">
+          <div class="icon">🔄</div>
+          <h3>Recurring transactions</h3>
+          <p>Bills, salary, and subscriptions post automatically on the schedule you set.</p>
+        </div>
+        <div class="feature reveal">
+          <div class="icon">📊</div>
+          <h3>Deep analytics</h3>
+          <p>Income vs. expense trends, savings rate, and spending broken down by category.</p>
+        </div>
+        <div class="feature reveal">
+          <div class="icon">📈</div>
+          <h3>Investment tracking</h3>
+          <p>Stocks, mutual funds, SIPs, crypto, gold, fixed deposits, and property — with live prices.</p>
+        </div>
+        <div class="feature reveal">
+          <div class="icon">🌐</div>
+          <h3>Net worth, one number</h3>
+          <p>Cash, investments, and business balances combined across currencies into one live total.</p>
+        </div>
+        <div class="feature reveal">
+          <div class="icon">🤖</div>
+          <h3>AI Advisor</h3>
+          <p>Ask an AI-powered chat about your portfolio or business — educational insights, never financial advice.</p>
+        </div>
+        <div class="feature reveal">
+          <div class="icon">🏢</div>
+          <h3>Multi-business</h3>
+          <p>Run more than one business? Track each one separately, in its own currency.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="security">
+      <div class="section-head reveal">
+        <div class="eyebrow">Your data, your control</div>
+        <h2>Private and secure by default</h2>
+      </div>
+      <div class="trio">
+        <div class="trio-card reveal">
+          <div class="icon-wrap">🔒</div>
+          <h3>Locked to you</h3>
+          <p>Optional PIN and Face ID / Touch ID lock keeps the app closed to everyone but you.</p>
+        </div>
+        <div class="trio-card reveal">
+          <div class="icon-wrap">🛡️</div>
+          <h3>Encrypted storage</h3>
+          <p>Your data is encrypted in transit and at rest — never sold, never used for ads.</p>
+        </div>
+        <div class="trio-card reveal">
+          <div class="icon-wrap">💱</div>
+          <h3>49 currencies</h3>
+          <p>Multi-currency support with live exchange rates, wherever your money moves.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="get-it">
+      <div class="cta reveal">
+        <span class="badge">🔒 In Development</span>
+        <h2>Coming soon</h2>
+        <p>Numerant is currently in testing ahead of launch on the App Store and Google Play. Check back soon to download.</p>
+        <div class="platforms-inline">
+          <span><svg viewBox="0 0 384 512" fill="#97979f"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141 8 184.8 8 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 37.6 59 129.3 107.2 127.8 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-84.1 102.6-121.8-65.2-30.7-65.7-90-65.7-91.8v-.2zM254.3 82.1c26.9-32 24.5-61.2 23.7-71.7-23.8 1.4-51.4 16.4-67.1 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69-35.1z"/></svg> iOS</span>
+          <span><svg viewBox="0 0 576 512" fill="#97979f"><path d="M420.55,301.93a24,24,0,1,1,24-24,24,24,0,0,1-24,24m-265.1,0a24,24,0,1,1,24-24,24,24,0,0,1-24,24m273.7-144.48,47.94-83a10,10,0,1,0-17.27-10h0l-48.54,84.07a301.25,301.25,0,0,0-246.56,0L116.18,64.45a10,10,0,1,0-17.27,10h0l47.94,83C64.53,202.22,8.24,285.55,0,384H576c-8.24-98.45-64.54-181.78-146.85-226.55"/></svg> Android</span>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="links">
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/terms.html">Terms of Service</a>
+        <a href="mailto:support@numerant.app">Contact</a>
+      </div>
+      <div class="copy">Numerant · Built with care for your financial future</div>
+    </footer>
+  </div>
+
+  <script>
+    var navEl = document.getElementById('nav');
+    window.addEventListener('scroll', function () {
+      navEl.classList.toggle('scrolled', window.scrollY > 8);
+    });
+
+    var revealEls = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
+    var ticking = false;
+    function checkReveal() {
+      var vh = window.innerHeight;
+      revealEls = revealEls.filter(function (el) {
+        var top = el.getBoundingClientRect().top;
+        if (top < vh * 0.92) {
+          el.classList.add('visible');
+          return false;
+        }
+        return true;
+      });
+      ticking = false;
+      if (revealEls.length === 0) {
+        window.removeEventListener('scroll', onScroll);
+        window.removeEventListener('resize', onScroll);
+      }
+    }
+    function onScroll() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(checkReveal);
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    checkReveal();
+  </script>
+</body>
+</html>
